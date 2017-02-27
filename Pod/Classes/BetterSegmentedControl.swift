@@ -155,6 +155,19 @@ import UIKit
             indicatorView.layer.borderColor = newValue
         }
     }
+  
+    public var indicatorViewBackgroundGradientLayer: CAGradientLayer? {
+        didSet {
+            setNeedsLayout()
+        }
+    }
+  
+    public var indicatorViewGradientBorder: CAGradientLayer? {
+        didSet {
+            setNeedsLayout()
+        }
+    }
+  
     /// The text color of the non-selected titles / options
     @IBInspectable public var titleColor: UIColor  {
         didSet {
@@ -285,6 +298,28 @@ import UIKit
             let frame = elementFrame(forIndex: UInt(index))
             titleLabelsView.subviews[index].frame = frame
             selectedTitleLabelsView.subviews[index].frame = frame
+        }
+      
+        if let gradient = self.indicatorViewBackgroundGradientLayer {
+            gradient.frame = indicatorView.frame.insetBy(dx: -5, dy: -5)
+            indicatorView.layer.insertSublayer(gradient, at: 0)
+        }
+      
+        if let gradientBorder = self.indicatorViewGradientBorder {
+            let shape = CAShapeLayer()
+            shape.lineWidth = self.indicatorViewBorderWidth
+            let rect = CGRect(x: self.indicatorView.frame.origin.x - 1,
+                              y: self.indicatorView.frame.origin.y - 1,
+                              width: self.indicatorView.frame.size.width - 4,
+                              height: self.indicatorView.frame.size.height - 5)
+            shape.path = UIBezierPath(roundedRect: rect,
+                                      cornerRadius: self.indicatorView.cornerRadius).cgPath
+            shape.strokeColor = UIColor.black.cgColor
+            shape.fillColor = UIColor.clear.cgColor
+            gradientBorder.mask = shape
+        
+            gradientBorder.frame = indicatorView.frame
+            indicatorView.layer.insertSublayer(gradientBorder, at: 0)
         }
     }
     
